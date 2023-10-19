@@ -1,4 +1,4 @@
-//Agregamos Sensor de temperatura
+//Me toco agregar el sensor de luz ambiental, reemplace el contador de no primos por el sensor de luz
 //defino los pines
 #define B 13
 #define A 12
@@ -16,6 +16,7 @@
 
 int contador = 0;
 int primos = 0;
+int val = 0;
 
 
 //Conecciones y configuracion entrada y salida
@@ -33,7 +34,7 @@ void setup() {
   pinMode(BOTON_A, INPUT_PULLUP);
   pinMode(BOTON_C, INPUT_PULLUP);
   pinMode(INTERRUPTOR_DESLIZANTE, INPUT);
-  pinMode(DESLIZANTE_TMP, INPUT);
+
 }
 //Funcionalidad en bucle de botones
 void loop() {
@@ -41,14 +42,15 @@ void loop() {
    if (digitalRead(INTERRUPTOR_DESLIZANTE)== 1) {
      elegir_display(primos);}
    if (digitalRead(INTERRUPTOR_DESLIZANTE) == 0){
-     elegir_display(contador);}
-   
-      if ((digitalRead(BOTON_A) == LOW) && contador < 99){
-        contador++;
+     val = analogRead(A2); //me da los valores de 1023 y 552, que son con los que se manejan el sensor
+     val = map(val, 1023, 552, 0, 99); //lo convierto en un porcentaje de 0 a 99 de cuanta luz recibe
+     elegir_display(val);} //Por ultimo lo muestro en el display
+    
+      if ((digitalRead(BOTON_A) == LOW) && primos < 99){        
         primos = cambiarPrimos(primos);
         delay(100);} 
       else if (digitalRead(BOTON_C) == LOW) {
-        contador = 0;
+        primos = 0;
         delay(60);}
   }else if (digitalRead(DESLIZANTE_TMP) == LOW){
   	int temperatura = medirTemperatura();
@@ -149,5 +151,4 @@ int medirTemperatura() {
   delay(10); 
   if (temperatura >0 || temperatura>99){
   	return temperatura;}
-  
 }
